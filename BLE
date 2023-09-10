@@ -1,0 +1,28 @@
+import pygatt
+
+# BLE cihazının MAC adresi
+device_mac = "00:11:22:33:44:55"
+
+# BLE cihazı ile bağlantı oluştur
+adapter = pygatt.GATTToolBackend()
+adapter.start()
+device = adapter.connect(device_mac, address_type=pygatt.BLEAddressType.random)
+
+# Hizmetleri ve karakteristikleri listeleyin
+for service in device.discover_services():
+    print(f"Service: {service.uuid}")
+    for characteristic in service.characteristics:
+        print(f"  Characteristic: {characteristic.uuid}")
+
+# Veri okuma ve yazma
+characteristic_uuid = "00002a00-0000-1000-8000-00805f9b34fb"  # Örnek bir karakteristik UUID
+data = device.char_read(characteristic_uuid)
+print(f"Alınan Veri: {data.decode()}")
+
+# Veri yazma
+write_characteristic_uuid = "00002a01-0000-1000-8000-00805f9b34fb"  # Örnek bir yazma karakteristik UUID
+device.char_write(write_characteristic_uuid, b"Merhaba, BLE!")
+
+# Bağlantıyı kapat
+device.disconnect()
+adapter.stop()
